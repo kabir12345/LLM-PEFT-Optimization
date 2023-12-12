@@ -26,8 +26,16 @@ optimization_techniques:
 tasks:
   - name: "Text Classification"
     description: "Classifying texts into predefined categories."
+    metrics:
+      - "Accuracy"
+      - "F1 Score"
   - name: "Summarization"
     description: "Generating a concise summary of a longer text document."
+    metrics:
+      - "ROUGE Scores"
+      - "BLEU Score"
   - name: "Text Generation"
     description: "Creating coherent and contextually relevant text based on a prompt."
+    metrics:
+      - "Perplexity"
 
