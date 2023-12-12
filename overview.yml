@@ -1,0 +1,33 @@
+project_name: "LLM Optimization Comparison"
+description: "Comparing LORA, IA3, and LoftQ optimization techniques on GPT-2, DistilBERT, and T5-Small across various NLP tasks."
+
+models:
+  - name: "GPT-2"
+    tasks:
+      - "Text Classification"
+      - "Summarization"
+      - "Text Generation"
+  - name: "DistilBERT"
+    tasks:
+      - "Text Classification"
+      - "Summarization"
+      - "Text Generation"
+  - name: "T5-Small"
+    tasks:
+      - "Text Classification"
+      - "Summarization"
+      - "Text Generation"
+
+optimization_techniques:
+  - "LORA"
+  - "IA3"
+  - "LoftQ"
+
+tasks:
+  - name: "Text Classification"
+    description: "Classifying texts into predefined categories."
+  - name: "Summarization"
+    description: "Generating a concise summary of a longer text document."
+  - name: "Text Generation"
+    description: "Creating coherent and contextually relevant text based on a prompt."
+
