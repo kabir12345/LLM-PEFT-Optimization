@@ -11,7 +11,8 @@ In the era of big data and sophisticated machine learning architectures, Large L
 ## LLM Overview
 ### Transformers
 Transformers are a type of neural network architecture that has become the backbone of most modern Large Language Models (LLMs). Introduced in the paper "Attention Is All You Need" by Vaswani et al., transformers are distinguished by their use of self-attention mechanisms, which allow them to process input data (like text) in parallel and capture complex contextual relationships between words. This architecture has proven to be highly effective for a range of tasks in natural language processing, leading to significant improvements in machine translation, text generation, and language understanding.
-![Alt text](URL_of_the_image)
+
+![Transformers Architecture](https://github.com/kabir12345/LLM-PEFT-Optimization/blob/main/static/transformers.png)
 
 
 ### GPT-2
