@@ -5,18 +5,12 @@ models:
   - name: "GPT-2"
     tasks:
       - "Text Classification"
-      - "Summarization"
-      - "Text Generation"
   - name: "DistilBERT"
     tasks:
       - "Text Classification"
-      - "Summarization"
-      - "Text Generation"
   - name: "T5-Small"
     tasks:
       - "Text Classification"
-      - "Summarization"
-      - "Text Generation"
 
 optimization_techniques:
   - "LORA"
