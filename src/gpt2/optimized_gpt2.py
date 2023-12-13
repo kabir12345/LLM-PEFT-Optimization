@@ -16,9 +16,7 @@ from torch.optim import AdamW  # Import from PyTorch
 # Setup logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 nltk.download('punkt')
-
-# Define the path to the cache directory
-cache_dir = "/Users/kabir/Downloads/LLM-PEFT-Optimization/cache/"  # Update this path
+cache_dir = "/Users/kabir/Downloads/LLM-PEFT-Optimization/cache/"  
 
 
 tokenizer = GPT2Tokenizer.from_pretrained("gpt2", padding_side='left')
@@ -54,10 +52,10 @@ def load_and_preprocess_data(tokenizer, train_limit=None, val_limit=None):
 def initialize_lora_model():
     base_model = GPT2LMHeadModel.from_pretrained("gpt2")
     lora_config = LoraConfig(
-        r=8,  # LoRA rank
-        lora_alpha=16,  # LoRA alpha
-        target_modules=["attn.c_attn", "attn.c_proj"],  # Target modules for LoRA
-        fan_in_fan_out=True  # Set to True for GPT-2's Conv1D layers
+        r=8,  
+        lora_alpha=16,  
+        target_modules=["attn.c_attn", "attn.c_proj"],  
+        fan_in_fan_out=True  
     )
     lora_model = get_peft_model(base_model, lora_config)
     return lora_model
@@ -67,8 +65,8 @@ def initialize_lora_model():
 def initialize_ia3_model():
     base_model = GPT2LMHeadModel.from_pretrained("gpt2")
     ia3_config = IA3Config(
-        target_modules=["attn.c_attn", "attn.c_proj", "mlp.c_fc", "mlp.c_proj"],  # Include both attention and feedforward modules
-        feedforward_modules=["mlp.c_fc", "mlp.c_proj"]  # Feedforward modules
+        target_modules=["attn.c_attn", "attn.c_proj", "mlp.c_fc", "mlp.c_proj"],  
+        feedforward_modules=["mlp.c_fc", "mlp.c_proj"]  
     )
     ia3_model = get_peft_model(base_model, ia3_config)
     return ia3_model
@@ -79,7 +77,7 @@ def get_optimizer(model):
     peft_params = [p for n, p in model.named_parameters() if n.endswith("_peft")]
     optimizer = AdamW([
         {'params': base_params},
-        {'params': peft_params, 'lr': 1e-4}  # Higher learning rate for PEFT parameters
+        {'params': peft_params, 'lr': 1e-4} 
     ], lr=5e-5)
     return optimizer
 
@@ -91,7 +89,7 @@ def compute_metrics(predictions, references):
     return rouge_scores, avg_bleu_score
 
 def train_and_evaluate(mod_name,model, train_loader, val_loader, tokenizer, optimizer, epochs=10):
-    # Lists to keep track of metrics for plotting
+
     epoch_losses = []
     epoch_rouge1_scores = []
     epoch_rouge2_scores = []
@@ -167,7 +165,7 @@ def train_and_evaluate(mod_name,model, train_loader, val_loader, tokenizer, opti
 
     plt.tight_layout()
     img_path='/Users/kabir/Downloads/LLM-PEFT-Optimization/results/gpt2/optimised_gpt2_'+mod_name+'.png'
-    plt.savefig(img_path)  # Update the path to your directory
+    plt.savefig(img_path)  
     plt.show()
 
 def main():
@@ -177,13 +175,12 @@ def main():
     train_loader = DataLoader(tokenized_dataset['train'], batch_size=4, shuffle=True, collate_fn=collate_fn)
     val_loader = DataLoader(tokenized_dataset['validation'], batch_size=4, shuffle=True, collate_fn=collate_fn)
 
-    # Train and evaluate LoRA model
+
     lora_model = initialize_lora_model()
     lora_optimizer = get_optimizer(lora_model)
     lora_model_name="lora"
     train_and_evaluate(lora_model_name,lora_model, train_loader, val_loader, tokenizer, lora_optimizer)
 
-    # Train and evaluate IA3 model
     ia3_model = initialize_ia3_model()
     ia3_optimizer = get_optimizer(ia3_model)
     ia3_model_name="ia3"

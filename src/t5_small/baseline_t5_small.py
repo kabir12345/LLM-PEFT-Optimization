@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 nltk.download('punkt')
 
-# Define the path to the cache directory
+
 cache_dir = "/Users/kabir/Downloads/LLM-PEFT-Optimization/cache/"
 
 tokenizer = T5Tokenizer.from_pretrained("t5-small")
@@ -37,8 +37,6 @@ def load_and_preprocess_data(tokenizer, train_limit=None, val_limit=None):
         def tokenize_function(examples):
             inputs = [tokenizer("summarize: " + article, padding="max_length", truncation=True, max_length=512) for article in examples["article"]]
             targets = [tokenizer(highlight, padding="max_length", truncation=True, max_length=128) for highlight in examples["highlights"]]
-            
-            # Now, we need to extract the input_ids and attention_mask for each example
             input_ids = [input['input_ids'] for input in inputs]
             attention_masks = [input['attention_mask'] for input in inputs]
             labels = [target['input_ids'] for target in targets]
@@ -66,7 +64,7 @@ def compute_metrics(predictions, references):
     return rouge_scores, avg_bleu_score
 
 def train_and_evaluate(model, train_loader, val_loader, tokenizer, optimizer, epochs=10):
-    # Lists to keep track of metrics for plotting
+
     epoch_losses = []
     epoch_rouge1_scores = []
     epoch_rouge2_scores = []
@@ -142,8 +140,8 @@ def train_and_evaluate(model, train_loader, val_loader, tokenizer, optimizer, ep
     plt.show()
 
 def main():
-    TRAIN_DATA_LIMIT = 20  # Adjust this to limit the amount of training data
-    VAL_DATA_LIMIT = 20   # Adjust this to limit the amount of validation data
+    TRAIN_DATA_LIMIT = 20  
+    VAL_DATA_LIMIT = 20   
     tokenized_dataset = load_and_preprocess_data(tokenizer, train_limit=TRAIN_DATA_LIMIT, val_limit=VAL_DATA_LIMIT)
     model = initialize_model()
     train_loader = DataLoader(tokenized_dataset['train'], batch_size=4, shuffle=True, collate_fn=collate_fn)

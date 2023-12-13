@@ -65,7 +65,6 @@ def compute_metrics(predictions, references):
 
 # Training function
 def train_and_evaluate(model, train_loader, val_loader, tokenizer, optimizer, epochs=10):
-    # Lists to keep track of metrics for plotting
     epoch_losses = []
     epoch_rouge1_scores = []
     epoch_rouge2_scores = []
@@ -143,8 +142,8 @@ def train_and_evaluate(model, train_loader, val_loader, tokenizer, optimizer, ep
     plt.show()
 # Main function
 def main():
-    TRAIN_DATA_LIMIT = 20  # Adjust this to limit the amount of training data
-    VAL_DATA_LIMIT = 20   # Adjust this to limit the amount of validation data
+    TRAIN_DATA_LIMIT = 20  
+    VAL_DATA_LIMIT = 20   
     tokenized_dataset = load_and_preprocess_data(tokenizer, train_limit=TRAIN_DATA_LIMIT, val_limit=VAL_DATA_LIMIT)
     model = initialize_model()
     train_loader = DataLoader(tokenized_dataset['train'], batch_size=4, shuffle=True, collate_fn=collate_fn)

@@ -9,14 +9,13 @@ from nltk.translate.bleu_score import sentence_bleu, SmoothingFunction
 import nltk
 import logging
 import matplotlib.pyplot as plt
-from peft import LoraConfig, IA3Config, get_peft_model  # Import PEFT modules
-from torch.optim import AdamW  # Import from PyTorch
+from peft import LoraConfig, IA3Config, get_peft_model  
+from torch.optim import AdamW  
 
 # Setup logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 nltk.download('punkt')
 
-# Define the path to the cache directory
 cache_dir = "/Users/kabir/Downloads/LLM-PEFT-Optimization/cache/"
 
 tokenizer = T5Tokenizer.from_pretrained("t5-small")
@@ -40,7 +39,6 @@ def load_and_preprocess_data(tokenizer, train_limit=None, val_limit=None):
             inputs = [tokenizer("summarize: " + article, padding="max_length", truncation=True, max_length=512) for article in examples["article"]]
             targets = [tokenizer(highlight, padding="max_length", truncation=True, max_length=128) for highlight in examples["highlights"]]
             
-            # Now, we need to extract the input_ids and attention_mask for each example
             input_ids = [input['input_ids'] for input in inputs]
             attention_masks = [input['attention_mask'] for input in inputs]
             labels = [target['input_ids'] for target in targets]
@@ -57,13 +55,12 @@ def load_and_preprocess_data(tokenizer, train_limit=None, val_limit=None):
 
     return dataset
 
-# Initialize T5 model with LoRA
 def initialize_lora_model():
     base_model = T5ForConditionalGeneration.from_pretrained("t5-small")
     lora_config = LoraConfig(
-        r=8,  # LoRA rank
-        lora_alpha=16,  # LoRA alpha
-        target_modules=["encoder.block.0.layer.0.SelfAttention.q", "encoder.block.0.layer.0.SelfAttention.k"]  # Target modules for LoRA
+        r=8,  
+        lora_alpha=16,  
+        target_modules=["encoder.block.0.layer.0.SelfAttention.q", "encoder.block.0.layer.0.SelfAttention.k"]  
     )
     lora_model = get_peft_model(base_model, lora_config)
     return lora_model
@@ -72,8 +69,8 @@ def initialize_lora_model():
 def initialize_ia3_model():
     base_model = T5ForConditionalGeneration.from_pretrained("t5-small")
     ia3_config = IA3Config(
-        target_modules=["encoder.block.0.layer.0.SelfAttention.q", "encoder.block.0.layer.0.SelfAttention.k","encoder.block.0.layer.0.DenseReluDense.wi"],  # Target modules for IA3
-        feedforward_modules=["encoder.block.0.layer.0.DenseReluDense.wi"]  # Feedforward modules for IA3
+        target_modules=["encoder.block.0.layer.0.SelfAttention.q", "encoder.block.0.layer.0.SelfAttention.k","encoder.block.0.layer.0.DenseReluDense.wi"],  
+        feedforward_modules=["encoder.block.0.layer.0.DenseReluDense.wi"]  
     )
     ia3_model = get_peft_model(base_model, ia3_config)
     return ia3_model
@@ -86,7 +83,6 @@ def compute_metrics(predictions, references):
     return rouge_scores, avg_bleu_score
 
 def train_and_evaluate(mod_name,model, train_loader, val_loader, tokenizer, optimizer, epochs=10):
-    # Lists to keep track of metrics for plotting
     epoch_losses = []
     epoch_rouge1_scores = []
     epoch_rouge2_scores = []
@@ -106,11 +102,9 @@ def train_and_evaluate(mod_name,model, train_loader, val_loader, tokenizer, opti
             optimizer.step()
             batch_losses.append(loss.item())
 
-        # Calculate average loss for the epoch
         avg_loss = sum(batch_losses) / len(batch_losses)
         epoch_losses.append(avg_loss)
 
-        # Evaluation
         model.eval()
         predictions, references = [], []
         for batch in val_loader:
@@ -159,7 +153,7 @@ def train_and_evaluate(mod_name,model, train_loader, val_loader, tokenizer, opti
 
     plt.tight_layout()
     img_path='/Users/kabir/Downloads/LLM-PEFT-Optimization/results/t5-small/optimized_t5'+mod_name+'.png'
-    plt.savefig(img_path)  # Update the path to your directory
+    plt.savefig(img_path)  
     plt.show()
 
 def main():
@@ -169,13 +163,12 @@ def main():
     train_loader = DataLoader(tokenized_dataset['train'], batch_size=4, shuffle=True, collate_fn=collate_fn)
     val_loader = DataLoader(tokenized_dataset['validation'], batch_size=4, shuffle=True, collate_fn=collate_fn)
 
-    # Train and evaluate LoRA model
+
     lora_model = initialize_lora_model()
     lora_optimizer = AdamW(lora_model.parameters(), lr=5e-5)
     model_name_lora="lora"
     train_and_evaluate(model_name_lora,lora_model, train_loader, val_loader, tokenizer, lora_optimizer)
 
-    # Train and evaluate IA3 model
     ia3_model = initialize_ia3_model()
     ia3_optimizer = AdamW(ia3_model.parameters(), lr=5e-5)
     model_name_ia3="ia3"
