@@ -4,10 +4,10 @@ description: "Comparing LORA, and IA3 optimization techniques on GPT-2 and T5-Sm
 models:
   - name: "GPT-2"
     tasks:
-      - "Text Classification"
+      - "Text Summarization"
   - name: "T5-Small"
     tasks:
-      - "Text Classification"
+      - "Text Summarization"
 
 optimization_techniques:
   - "LORA"
